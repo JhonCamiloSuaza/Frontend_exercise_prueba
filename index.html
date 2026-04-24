@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de gestión de préstamos de libros">
+    <title>📚 BiblioGestión - Préstamos de Libros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="header" id="main-header">
+        <div class="header__container">
+            <div class="header__logo"><span>📚</span><h1>BiblioGestión</h1></div>
+            <p class="header__subtitle">Sistema de Préstamos de Libros</p>
+        </div>
+    </header>
+    <nav class="nav" id="main-nav">
+        <button class="nav__tab nav__tab--active" data-tab="usuarios" id="tab-usuarios">👤 Usuarios</button>
+        <button class="nav__tab" data-tab="libros" id="tab-libros">📖 Libros</button>
+        <button class="nav__tab" data-tab="prestamos" id="tab-prestamos">🔄 Préstamos</button>
+    </nav>
+    <main class="main" id="main-content">
+        <!-- USUARIOS -->
+        <section class="section section--active" id="section-usuarios">
+            <div class="section__header">
+                <h2>👤 Gestión de Usuarios</h2>
+                <button class="btn btn--primary" onclick="Usuarios.showForm()">+ Nuevo Usuario</button>
+            </div>
+            <div class="form-container" id="form-usuario" style="display:none;">
+                <div class="form-card">
+                    <h3 id="form-usuario-title">Crear Usuario</h3>
+                    <form id="usuario-form" onsubmit="Usuarios.save(event)">
+                        <input type="hidden" id="usuario-id">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Nombre *</label><input type="text" id="usuario-nombre" required></div>
+                            <div class="form-group"><label>Apellido *</label><input type="text" id="usuario-apellido" required></div>
+                            <div class="form-group"><label>Email *</label><input type="email" id="usuario-email" required></div>
+                            <div class="form-group"><label>Teléfono</label><input type="text" id="usuario-telefono"></div>
+                            <div class="form-group"><label>Género</label><select id="usuario-genero"><option value="">Seleccionar...</option><option value="Masculino">Masculino</option><option value="Femenino">Femenino</option><option value="No Binario">No Binario</option></select></div>
+                            <div class="form-group"><label>Estado</label><select id="usuario-activo"><option value="true">Activo</option><option value="false">Inactivo</option></select></div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn--success">💾 Guardar</button>
+                            <button type="button" class="btn btn--secondary" onclick="Usuarios.hideForm()">✖ Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="table"><thead><tr><th>Nombre</th><th>Apellido</th><th>Email</th><th>Teléfono</th><th>Género</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="tbody-usuarios"><tr><td colspan="7" class="table__empty">Cargando...</td></tr></tbody></table>
+            </div>
+        </section>
+        <!-- LIBROS -->
+        <section class="section" id="section-libros" style="display:none;">
+            <div class="section__header">
+                <h2>📖 Gestión de Libros</h2>
+                <button class="btn btn--primary" onclick="Libros.showForm()">+ Nuevo Libro</button>
+            </div>
+            <div class="form-container" id="form-libro" style="display:none;">
+                <div class="form-card">
+                    <h3 id="form-libro-title">Crear Libro</h3>
+                    <form id="libro-form" onsubmit="Libros.save(event)">
+                        <input type="hidden" id="libro-id">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Título *</label><input type="text" id="libro-titulo" required></div>
+                            <div class="form-group"><label>Autor *</label><input type="text" id="libro-autor" required></div>
+                            <div class="form-group"><label>ISBN *</label><input type="text" id="libro-isbn" required></div>
+                            <div class="form-group"><label>Género</label><input type="text" id="libro-genero"></div>
+                            <div class="form-group"><label>Fecha Publicación</label><input type="date" id="libro-fecha"></div>
+                            <div class="form-group"><label>Disponible</label><select id="libro-disponible"><option value="true">Sí</option><option value="false">No</option></select></div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn--success">💾 Guardar</button>
+                            <button type="button" class="btn btn--secondary" onclick="Libros.hideForm()">✖ Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="table"><thead><tr><th>Título</th><th>Autor</th><th>ISBN</th><th>Género</th><th>Disponible</th><th>Acciones</th></tr></thead>
+                <tbody id="tbody-libros"><tr><td colspan="6" class="table__empty">Cargando...</td></tr></tbody></table>
+            </div>
+        </section>
+        <!-- PRÉSTAMOS -->
+        <section class="section" id="section-prestamos" style="display:none;">
+            <div class="section__header">
+                <h2>🔄 Gestión de Préstamos</h2>
+                <button class="btn btn--primary" onclick="Prestamos.showForm()">+ Nuevo Préstamo</button>
+            </div>
+            <div class="form-container" id="form-prestamo" style="display:none;">
+                <div class="form-card">
+                    <h3 id="form-prestamo-title">Crear Préstamo</h3>
+                    <form id="prestamo-form" onsubmit="Prestamos.save(event)">
+                        <input type="hidden" id="prestamo-id">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Usuario *</label><select id="prestamo-usuario" required><option value="">Seleccionar...</option></select></div>
+                            <div class="form-group"><label>Libro *</label><select id="prestamo-libro" required><option value="">Seleccionar...</option></select></div>
+                            <div class="form-group"><label>Fecha Devolución</label><input type="datetime-local" id="prestamo-fecha-devolucion"></div>
+                            <div class="form-group"><label>Estado *</label><select id="prestamo-estado" required><option value="ACTIVO">Activo</option><option value="DEVUELTO">Devuelto</option><option value="VENCIDO">Vencido</option></select></div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn--success">💾 Guardar</button>
+                            <button type="button" class="btn btn--secondary" onclick="Prestamos.hideForm()">✖ Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="table"><thead><tr><th>Usuario</th><th>Libro</th><th>Fecha Préstamo</th><th>Devolución</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody id="tbody-prestamos"><tr><td colspan="6" class="table__empty">Cargando...</td></tr></tbody></table>
+            </div>
+        </section>
+    </main>
+    <div class="toast" id="toast"><span id="toast-icon">✅</span><span id="toast-message"></span></div>
+    <footer class="footer"><p>📚 BiblioGestión © 2026</p><p class="footer__tech">HTML • CSS • JavaScript • Axios</p></footer>
+    <script src="js/api.js"></script>
+    <script src="js/usuarios.js"></script>
+    <script src="js/libros.js"></script>
+    <script src="js/prestamos.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
